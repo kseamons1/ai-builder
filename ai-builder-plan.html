@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Builder Plan — Keller Seamons</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:       #FDF6E4;
+      --white:       #FFFFFF;
+      --green:       #0D7F5B;
+      --coral:       #EE6E51;
+      --periwinkle:  #8BB1FA;
+      --mint:        #04C981;
+      --royal-blue:  #1A3AC1;
+      --ink:         #171717;
+      --black:       #000000;
+      --on-color:    #FFFFFF;
+      --hero:        clamp(42px, 6vw, 70px);
+      --heading:     clamp(28px, 4vw, 48px);
+      --eyebrow:     clamp(13px, 1.8vw, 18px);
+      --body:        20px;
+      --section-pad: clamp(48px, 7vw, 88px);
+      --content-max: 1120px;
+      --pill:        999px;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+    }
+
+    /* ─────────────────────────────────────
+       1. HEADER
+    ───────────────────────────────────── */
+    .page-header {
+      background: var(--green);
+      color: var(--on-color);
+      padding: clamp(32px, 5vw, 64px) max(24px, 5vw);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-header__inner {
+      max-width: var(--content-max);
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .page-header__eyebrow {
+      display: block;
+      font-size: var(--eyebrow);
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--mint);
+      margin-bottom: 14px;
+      opacity: 0.9;
+    }
+
+    .page-header__name {
+      font-size: var(--hero);
+      font-weight: 900;
+      line-height: 1.05;
+      color: var(--cream);
+      clip-path: inset(0 0 100% 0);
+      animation: reveal 2.5s cubic-bezier(0.16,1,0.3,1) 0.1s forwards;
+      margin-bottom: 24px;
+    }
+
+    .page-header__goal {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(253,246,228,0.15);
+      border: 1.5px solid rgba(253,246,228,0.3);
+      border-radius: var(--pill);
+      padding: 10px 22px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--cream);
+      margin-bottom: 16px;
+    }
+
+    .page-header__goal .goal-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--mint);
+      flex-shrink: 0;
+    }
+
+    .page-header__date {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--mint);
+      opacity: 0.75;
+      margin-top: 14px;
+    }
+
+    /* decorative blobs in header */
+    .hdr-blob {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0.1;
+    }
+    .hdr-blob--tr { top: -60px; right: -40px; width: 300px; }
+    .hdr-blob--bl { bottom: -80px; left: -40px; width: 220px; }
+
+    /* ─────────────────────────────────────
+       SHARED LAYOUT
+    ───────────────────────────────────── */
+    .section {
+      padding: var(--section-pad) max(24px, 5vw);
+    }
+
+    .section__inner {
+      max-width: var(--content-max);
+      margin: 0 auto;
+    }
+
+    .section-eyebrow {
+      display: block;
+      font-size: var(--eyebrow);
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--green);
+      margin-bottom: 12px;
+    }
+
+    .section-heading {
+      font-size: var(--heading);
+      font-weight: 900;
+      line-height: 1.15;
+      color: var(--black);
+      margin-bottom: 48px;
+      clip-path: inset(0 0 100% 0);
+      animation: reveal 2.5s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
+    }
+
+    /* ─────────────────────────────────────
+       2. TIME SUMMARY
+    ───────────────────────────────────── */
+    .summary { background: var(--cream); }
+
+    .summary__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+      margin-bottom: 36px;
+    }
+
+    .summary-card {
+      background: var(--white);
+      border-radius: 4px;
+      padding: 32px 28px;
+      position: relative;
+      border-top: 4px solid var(--green);
+    }
+
+    .summary-card:nth-child(2) { border-top-color: var(--coral); }
+    .summary-card:nth-child(3) { border-top-color: var(--periwinkle); }
+
+    .summary-card__num {
+      font-size: 48px;
+      font-weight: 900;
+      color: var(--green);
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .summary-card:nth-child(2) .summary-card__num { color: var(--coral); }
+    .summary-card:nth-child(3) .summary-card__num { color: var(--periwinkle); }
+
+    .summary-card__title {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--black);
+      margin-bottom: 10px;
+      line-height: 1.2;
+    }
+
+    .summary-card__body {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.6;
+      color: var(--ink);
+    }
+
+    .audit-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--black);
+      color: var(--on-color);
+      font-size: 14px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      padding: 13px 28px;
+      border-radius: var(--pill);
+      text-decoration: none;
+    }
+
+    /* ─────────────────────────────────────
+       3. AUTOMATION CARDS
+    ───────────────────────────────────── */
+    .builds { background: var(--white); }
+
+    .builds__stack {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .build-card {
+      background: var(--cream);
+      border-radius: 4px;
+      padding: 36px 40px;
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* rank accent bar */
+    .build-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 5px;
+      border-radius: 4px 0 0 4px;
+    }
+    .build-card:nth-child(1)::before { background: var(--green); }
+    .build-card:nth-child(2)::before { background: var(--periwinkle); }
+    .build-card:nth-child(3)::before { background: var(--mint); }
+    .build-card:nth-child(4)::before { background: var(--coral); }
+    .build-card:nth-child(5)::before { background: var(--royal-blue); }
+    .build-card:nth-child(6)::before { background: var(--ink); opacity: 0.3; }
+
+    .build-card__left {}
+    .build-card__right {}
+
+    .build-card__rank {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--green);
+      margin-bottom: 8px;
+    }
+
+    .build-card:nth-child(2) .build-card__rank { color: var(--periwinkle); }
+    .build-card:nth-child(3) .build-card__rank { color: var(--mint); }
+    .build-card:nth-child(4) .build-card__rank { color: var(--coral); }
+    .build-card:nth-child(5) .build-card__rank { color: var(--royal-blue); }
+    .build-card:nth-child(6) .build-card__rank { color: var(--ink); opacity: 0.5; }
+
+    .build-card__title {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--black);
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .build-card__outcome {
+      font-size: 16px;
+      font-weight: 700;
+      font-style: italic;
+      color: var(--green);
+      line-height: 1.55;
+      margin-bottom: 20px;
+    }
+
+    .build-card:nth-child(2) .build-card__outcome { color: var(--royal-blue); }
+    .build-card:nth-child(3) .build-card__outcome { color: var(--green); }
+    .build-card:nth-child(4) .build-card__outcome { color: var(--coral); }
+    .build-card:nth-child(5) .build-card__outcome { color: var(--royal-blue); }
+    .build-card:nth-child(6) .build-card__outcome { color: var(--ink); }
+
+    .build-card__pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: var(--pill);
+    }
+
+    .pill--quick { background: var(--mint); color: var(--black); }
+    .pill--medium { background: var(--coral); color: var(--on-color); }
+    .pill--status { background: var(--ink); color: var(--cream); opacity: 0.4; }
+    .pill--hours { background: var(--black); color: var(--cream); }
+
+    .build-col-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--green);
+      margin-bottom: 10px;
+    }
+
+    .build-col-text {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.6;
+      color: var(--ink);
+    }
+
+    .build-col-today { margin-bottom: 28px; }
+
+    /* ─────────────────────────────────────
+       4. SYSTEM SPRINTS
+    ───────────────────────────────────── */
+    .system { background: var(--cream); }
+
+    .system__grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 20px;
+    }
+
+    .sprint-card {
+      background: var(--white);
+      border-radius: 4px;
+      padding: 28px 24px;
+      opacity: 0.38;
+      position: relative;
+      border-top: 4px solid var(--ink);
+    }
+
+    .sprint-card__label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+
+    .sprint-card__title {
+      font-size: 17px;
+      font-weight: 900;
+      color: var(--black);
+      line-height: 1.25;
+      margin-bottom: 14px;
+    }
+
+    .sprint-card__coming {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      opacity: 0.6;
+    }
+
+    /* ─────────────────────────────────────
+       FOOTER
+    ───────────────────────────────────── */
+    .page-footer {
+      background: var(--black);
+      color: var(--cream);
+      text-align: center;
+      padding: 28px 24px;
+      font-size: 14px;
+      font-weight: 700;
+      opacity: 0.85;
+    }
+
+    /* ─────────────────────────────────────
+       ANIMATIONS
+    ───────────────────────────────────── */
+    @keyframes reveal {
+      from { clip-path: inset(0 0 100% 0); opacity: 0; }
+      to   { clip-path: inset(0 0 0% 0);   opacity: 1; }
+    }
+
+    @keyframes spin-slow { to { transform: rotate(360deg); } }
+
+    /* ─────────────────────────────────────
+       RESPONSIVE
+    ───────────────────────────────────── */
+    @media (max-width: 960px) {
+      .summary__grid { grid-template-columns: 1fr; }
+      .system__grid  { grid-template-columns: 1fr 1fr; }
+      .build-card    { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .system__grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     1. HEADER
+══════════════════════════════════════ -->
+<header class="page-header">
+
+  <!-- decorative blobs -->
+  <svg class="hdr-blob hdr-blob--tr" viewBox="0 0 300 280" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M60,40 C100,10 200,20 240,70 C280,120 270,200 220,240 C170,280 80,270 40,220 C0,170 20,70 60,40Z" fill="#FDF6E4"/>
+  </svg>
+  <svg class="hdr-blob hdr-blob--bl" viewBox="0 0 220 210" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M30,20 C70,0 170,10 190,60 C210,110 180,180 120,200 C60,220 10,180 5,120 C0,60 10,35 30,20Z" fill="#FDF6E4"/>
+  </svg>
+
+  <div class="page-header__inner">
+    <span class="page-header__eyebrow">AI Builder Portfolio · Sprint 1</span>
+    <h1 class="page-header__name">Keller Seamons</h1>
+    <div class="page-header__goal">
+      <span class="goal-dot"></span>
+      #1 Goal: Brand awareness → 100 devices sold by end of Q2 2026
+    </div>
+    <div class="page-header__date">April 28, 2026</div>
+  </div>
+</header>
+
+
+<!-- ══════════════════════════════════════
+     2. TIME SUMMARY
+══════════════════════════════════════ -->
+<section class="section summary">
+  <div class="section__inner">
+    <span class="section-eyebrow">What the data showed</span>
+    <h2 class="section-heading">3 things I learned from my time audit</h2>
+
+    <div class="summary__grid">
+
+      <div class="summary-card">
+        <div class="summary-card__num">38%</div>
+        <div class="summary-card__title">Social media is eating the week</div>
+        <div class="summary-card__body">38% of every Chrome session goes to managing social accounts — scrolling, checking, hunting for content to post. That's time that should be building Scribbi, not watching it.</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-card__num">33×</div>
+        <div class="summary-card__title">The highest-ROI channel is the most ignored</div>
+        <div class="summary-card__body">Reddit (r/RemarkableTablet, r/Parenting) is Priority 1 in the marketing playbook. But Facebook Business Suite got 262 visits while Reddit got 8. The channel that could convert the first buyers isn't getting touched.</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-card__num">~15%</div>
+        <div class="summary-card__title">Life admin is a real competitor right now</div>
+        <div class="summary-card__body">Zillow, Realtor, Chase mortgage, DocuSign — house-buying is peaking during the sprint to Kickstarter launch. This isn't a criticism, it's a reason to automate more aggressively while the personal load is high.</div>
+      </div>
+
+    </div>
+
+    <a href="time-audit.html" class="audit-link">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Full Time Audit
+    </a>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     3. WHAT I'M BUILDING
+══════════════════════════════════════ -->
+<section class="section builds">
+  <div class="section__inner">
+    <span class="section-eyebrow">Sprint 1 Automations</span>
+    <h2 class="section-heading">What I'm building</h2>
+
+    <div class="builds__stack">
+
+      <!-- #1 ─ Social content brief -->
+      <div class="build-card">
+        <div class="build-card__left">
+          <div class="build-card__rank">#1 · Highest Impact</div>
+          <h3 class="build-card__title">Weekly Social Content Brief</h3>
+          <p class="build-card__outcome">"Every Monday I open a brief with this week's trending screen-time stories, three ready-to-post captions, and a Reddit thread worth joining — I never hunt for content again."</p>
+          <div class="build-card__pills">
+            <span class="pill pill--hours">~5 hrs/wk reclaimed</span>
+            <span class="pill pill--quick">Quick win</span>
+            <span class="pill pill--status">Not started</span>
+          </div>
+        </div>
+        <div class="build-card__right">
+          <div class="build-col-today">
+            <div class="build-col-label">Today</div>
+            <p class="build-col-text">Manual searching, feed scrolling, piecing together what to post. This is 38% of browser time and the task most wanted off the plate.</p>
+          </div>
+          <div>
+            <div class="build-col-label">Automated version</div>
+            <p class="build-col-text">A scheduled agent runs Monday 7am. Searches for new screen-time studies, school phone ban news, handwriting research, viral parenting content. Outputs 3 drafted captions (Instagram, LinkedIn, Reddit) sourced and ready to paste — delivered to Gmail.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- #2 ─ LinkedIn triage -->
+      <div class="build-card">
+        <div class="build-card__left">
+          <div class="build-card__rank">#2 · High Impact</div>
+          <h3 class="build-card__title">LinkedIn Inbox Triage</h3>
+          <p class="build-card__outcome">"My LinkedIn inbox surfaces only the connection requests and messages worth acting on — manufacturers and random salespeople are already filtered out."</p>
+          <div class="build-card__pills">
+            <span class="pill pill--hours">~3 hrs/wk reclaimed</span>
+            <span class="pill pill--quick">Quick win</span>
+            <span class="pill pill--status">Not started</span>
+          </div>
+        </div>
+        <div class="build-card__right">
+          <div class="build-col-today">
+            <div class="build-col-label">Today</div>
+            <p class="build-col-text">5–10 LinkedIn notification emails per day. Plastic injection molding companies, cold recruiters, and random salespeople mix in with genuine investor and educator outreach.</p>
+          </div>
+          <div>
+            <div class="build-col-label">Automated version</div>
+            <p class="build-col-text">A daily agent scans LinkedIn notification digest emails. Labels genuine leads — educators, parents, homeschool advocates, edtech, VCs — as "Worth Acting On" and archives the rest. One clean list each morning.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- #3 ─ Reddit monitor -->
+      <div class="build-card">
+        <div class="build-card__left">
+          <div class="build-card__rank">#3 · Unlocks Priority Channel</div>
+          <h3 class="build-card__title">Reddit Community Monitor</h3>
+          <p class="build-card__outcome">"Each morning I get a list of today's best Reddit threads to join — no scrolling required, just show up and reply."</p>
+          <div class="build-card__pills">
+            <span class="pill pill--hours">~2 hrs/wk unlocked</span>
+            <span class="pill pill--quick">Quick win</span>
+            <span class="pill pill--status">Not started</span>
+          </div>
+        </div>
+        <div class="build-card__right">
+          <div class="build-col-today">
+            <div class="build-col-label">Today</div>
+            <p class="build-col-text">Reddit is the highest-ROI channel in the playbook. 8 visits in 14 weekdays. The channel is untapped, not unwanted — the friction is finding the right threads without getting lost in feeds.</p>
+          </div>
+          <div>
+            <div class="build-col-label">Automated version</div>
+            <p class="build-col-text">A daily agent searches r/RemarkableTablet, r/Parenting, r/homeschool, r/nosurf for posts about screen time, kids devices, writing, and iPad alternatives posted in the last 24 hours. Gmail digest with titles, links, and a suggested reply angle for each.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- #4 ─ Newsletter digest -->
+      <div class="build-card">
+        <div class="build-card__left">
+          <div class="build-card__rank">#4 · Clears Inbox Noise</div>
+          <h3 class="build-card__title">Email Newsletter Digest</h3>
+          <p class="build-card__outcome">"The 12+ newsletters I subscribe to get summarized into a single weekly brief — only the items relevant to Scribbi, screens, edtech, or fundraising."</p>
+          <div class="build-card__pills">
+            <span class="pill pill--hours">~2 hrs/wk reclaimed</span>
+            <span class="pill pill--quick">Quick win</span>
+            <span class="pill pill--status">Not started</span>
+          </div>
+        </div>
+        <div class="build-card__right">
+          <div class="build-col-today">
+            <div class="build-col-label">Today</div>
+            <p class="build-col-text">12+ newsletters landing daily: WSJ, Exec Sum, Crypto digests, Substack, LinkedIn newsletters, and more. Most aren't relevant. But some contain exactly the research needed for social content — buried in noise.</p>
+          </div>
+          <div>
+            <div class="build-col-label">Automated version</div>
+            <p class="build-col-text">A weekly Friday agent scans newsletter emails, extracts anything about screen time, children's tech, edtech, handwriting, parenting trends, or VC/fundraising. Delivers a 10-bullet brief. Everything else auto-archived.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- #5 ─ Business email triage -->
+      <div class="build-card">
+        <div class="build-card__left">
+          <div class="build-card__rank">#5 · Removes Revenue Risk</div>
+          <h3 class="build-card__title">Scribbi Business Email Triage</h3>
+          <p class="build-card__outcome">"Genuine Scribbi leads and investor emails never get buried under LinkedIn pings and Backcountry sales."</p>
+          <div class="build-card__pills">
+            <span class="pill pill--hours">~1 hr/wk + risk removed</span>
+            <span class="pill pill--quick">Quick win</span>
+            <span class="pill pill--status">Not started</span>
+          </div>
+        </div>
+        <div class="build-card__right">
+          <div class="build-col-today">
+            <div class="build-col-label">Today</div>
+            <p class="build-col-text">Dalton's Scribbi trial follow-up email (Apr 15) sat unanswered. The inbox is ~80% noise. Actual leads get lost. This isn't hypothetical — it already happened.</p>
+          </div>
+          <div>
+            <div class="build-col-label">Automated version</div>
+            <p class="build-col-text">A daily Gmail agent labels emails from known leads, investors, pilot families, media, and homeschool contacts as "🟢 Scribbi Priority." Flags anything mentioning Scribbi, device, pre-order, homeschool, or ESA. Same-day ping if a new lead arrives.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- #6 ─ LinkedIn scheduler -->
+      <div class="build-card">
+        <div class="build-card__left">
+          <div class="build-card__rank">#6 · Smooths Cadence</div>
+          <h3 class="build-card__title">LinkedIn Post Scheduler</h3>
+          <p class="build-card__outcome">"My LinkedIn impressions stop swinging 3× week to week because there's always a post ready to go."</p>
+          <div class="build-card__pills">
+            <span class="pill pill--hours">~1 hr/wk consistency</span>
+            <span class="pill pill--medium">Medium lift</span>
+            <span class="pill pill--status">Not started</span>
+          </div>
+        </div>
+        <div class="build-card__right">
+          <div class="build-col-today">
+            <div class="build-col-label">Today</div>
+            <p class="build-col-text">Weekly impressions swing 1,806 to 5,152 — a clear sign posting is inconsistent. Some weeks get 3 posts, some get 1. The algorithm rewards cadence above content quality.</p>
+          </div>
+          <div>
+            <div class="build-col-label">Automated version</div>
+            <p class="build-col-text">The Monday content brief (Automation #1) generates 3 draft LinkedIn posts per week. An agent queues them into a review doc. Review and approve each in under 2 minutes. Cadence becomes reliable without daily creative effort.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     4. MY SYSTEM (SPRINTS)
+══════════════════════════════════════ -->
+<section class="section system">
+  <div class="section__inner">
+    <span class="section-eyebrow">The full roadmap</span>
+    <h2 class="section-heading">My system</h2>
+
+    <div class="system__grid">
+
+      <div class="sprint-card">
+        <div class="sprint-card__label">Sprint 2</div>
+        <div class="sprint-card__title">Deployed website + data collection tool</div>
+        <div class="sprint-card__coming">Coming in Sprint 2</div>
+      </div>
+
+      <div class="sprint-card">
+        <div class="sprint-card__label">Sprint 3</div>
+        <div class="sprint-card__title">Automated n8n or Claude Routines workflow</div>
+        <div class="sprint-card__coming">Coming in Sprint 3</div>
+      </div>
+
+      <div class="sprint-card">
+        <div class="sprint-card__label">Sprint 4</div>
+        <div class="sprint-card__title">Knowledge wiki context system</div>
+        <div class="sprint-card__coming">Coming in Sprint 4</div>
+      </div>
+
+      <div class="sprint-card">
+        <div class="sprint-card__label">Sprint 5</div>
+        <div class="sprint-card__title">Custom agentic workflow</div>
+        <div class="sprint-card__coming">Coming in Sprint 5</div>
+      </div>
+
+      <div class="sprint-card">
+        <div class="sprint-card__label">Sprint 6</div>
+        <div class="sprint-card__title">Eval system — tested and documented</div>
+        <div class="sprint-card__coming">Coming in Sprint 6</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     FOOTER
+══════════════════════════════════════ -->
+<footer class="page-footer">
+  AI Builder Automation Portfolio — April 28, 2026 &nbsp;|&nbsp; Built in L2
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Builder Dashboard — Keller Seamons</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:      #FDF6E4;
+      --white:      #FFFFFF;
+      --green:      #0D7F5B;
+      --coral:      #EE6E51;
+      --periwinkle: #8BB1FA;
+      --mint:       #04C981;
+      --royal-blue: #1A3AC1;
+      --ink:        #171717;
+      --black:      #000000;
+      --on-color:   #FFFFFF;
+      --pill:       999px;
+
+      --col-suggested: #D1D5DB;
+      --col-suggested-bg: #F3F4F6;
+      --col-tobuild:   var(--periwinkle);
+      --col-tobuild-bg: #EEF4FF;
+      --col-inprogress: var(--coral);
+      --col-inprogress-bg: #FEF0EC;
+      --col-done:      var(--mint);
+      --col-done-bg:   #E6FAF3;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .page-header {
+      background: var(--green);
+      padding: 28px max(24px, 4vw);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .page-header__left {}
+
+    .page-header__eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--mint);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .page-header__title {
+      font-size: clamp(24px, 4vw, 38px);
+      font-weight: 900;
+      color: var(--cream);
+      line-height: 1.1;
+    }
+
+    .page-header__meta {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--cream);
+      opacity: 0.6;
+      margin-top: 6px;
+    }
+
+    .header-goal {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(253,246,228,0.15);
+      border: 1.5px solid rgba(253,246,228,0.25);
+      border-radius: var(--pill);
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--cream);
+    }
+
+    .goal-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--mint);
+      flex-shrink: 0;
+    }
+
+    /* ── Board ── */
+    .board-wrap {
+      padding: clamp(24px, 4vw, 48px) max(20px, 4vw);
+      overflow-x: auto;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(260px, 1fr));
+      gap: 20px;
+      min-width: 900px;
+    }
+
+    /* ── Column ── */
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .column__header {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .column__title {
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+    }
+
+    .column__count {
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(0,0,0,0.12);
+      padding: 2px 9px;
+      border-radius: var(--pill);
+    }
+
+    /* Column themes */
+    .column--suggested .column__header { background: var(--col-suggested); color: #6B7280; }
+    .column--suggested .column__count  { background: rgba(0,0,0,0.08); color: #6B7280; }
+
+    .column--tobuild .column__header   { background: var(--col-tobuild); color: var(--black); }
+    .column--inprogress .column__header{ background: var(--col-inprogress); color: var(--on-color); }
+    .column--done .column__header      { background: var(--col-done); color: var(--black); }
+
+    .column__body {
+      flex: 1;
+      padding: 12px;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: background 0.15s;
+    }
+
+    .column--suggested .column__body   { background: var(--col-suggested-bg); }
+    .column--tobuild .column__body     { background: var(--col-tobuild-bg); }
+    .column--inprogress .column__body  { background: var(--col-inprogress-bg); }
+    .column--done .column__body        { background: var(--col-done-bg); }
+
+    .column__body.drag-over {
+      outline: 2px dashed currentColor;
+      outline-offset: -4px;
+      opacity: 0.85;
+    }
+
+    .column__empty {
+      font-size: 13px;
+      font-weight: 700;
+      color: #9CA3AF;
+      text-align: center;
+      padding: 24px 12px;
+      pointer-events: none;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--white);
+      border-radius: 4px;
+      padding: 16px 18px;
+      cursor: grab;
+      user-select: none;
+      transition: opacity 0.15s, box-shadow 0.15s;
+      position: relative;
+    }
+
+    .card:active { cursor: grabbing; }
+    .card.dragging { opacity: 0.4; }
+
+    /* left accent bar */
+    .card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      border-radius: 4px 0 0 4px;
+    }
+
+    .card[data-priority="High"]::before   { background: var(--coral); }
+    .card[data-priority="Medium"]::before { background: var(--periwinkle); }
+    .card[data-priority="Low"]::before    { background: #D1D5DB; }
+
+    .column--suggested .card::before { background: #D1D5DB; }
+
+    .card__name {
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--black);
+      margin-bottom: 6px;
+      line-height: 1.25;
+    }
+
+    .card__desc {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.5;
+      margin-bottom: 12px;
+      opacity: 0.7;
+    }
+
+    .card__footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .priority-pill {
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      padding: 3px 10px;
+      border-radius: var(--pill);
+    }
+
+    .priority-pill--High   { background: #FEE2D5; color: var(--coral); }
+    .priority-pill--Medium { background: #E0EBFF; color: var(--royal-blue); }
+    .priority-pill--Low    { background: #F3F4F6; color: #6B7280; }
+
+    .column--suggested .priority-pill { background: #E5E7EB; color: #9CA3AF; }
+
+    .card__hours {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ink);
+      opacity: 0.45;
+    }
+
+    /* suggested cards are greyed */
+    .column--suggested .card {
+      opacity: 0.6;
+    }
+
+    /* done cards get a subtle strikethrough feel */
+    .column--done .card__name {
+      opacity: 0.6;
+    }
+
+    /* ── Footer ── */
+    .page-footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      opacity: 0.35;
+      border-top: 2px solid rgba(0,0,0,0.06);
+    }
+
+    @keyframes reveal {
+      from { clip-path: inset(0 0 100% 0); opacity: 0; }
+      to   { clip-path: inset(0 0 0% 0);   opacity: 1; }
+    }
+
+    .page-header__title {
+      clip-path: inset(0 0 100% 0);
+      animation: reveal 1.8s cubic-bezier(0.16,1,0.3,1) 0.05s forwards;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="page-header">
+  <div class="page-header__left">
+    <span class="page-header__eyebrow">AI Builder Portfolio · Sprint 1</span>
+    <h1 class="page-header__title">Automation Dashboard</h1>
+    <div class="page-header__meta">Keller Seamons · April 28, 2026</div>
+  </div>
+  <div class="header-goal">
+    <span class="goal-dot"></span>
+    #1 Goal: Brand awareness → 100 devices sold by end of Q2 2026
+  </div>
+</header>
+
+<!-- ── Board ── -->
+<div class="board-wrap">
+  <div class="board" id="board">
+
+    <!-- SUGGESTED -->
+    <div class="column column--suggested" data-column="suggested">
+      <div class="column__header">
+        <span class="column__title">Suggested</span>
+        <span class="column__count" id="count-suggested">0</span>
+      </div>
+      <div class="column__body" id="col-suggested" data-col="suggested">
+        <div class="column__empty">Ideas from others will appear here</div>
+      </div>
+    </div>
+
+    <!-- TO BUILD -->
+    <div class="column column--tobuild" data-column="tobuild">
+      <div class="column__header">
+        <span class="column__title">To Build</span>
+        <span class="column__count" id="count-tobuild">0</span>
+      </div>
+      <div class="column__body" id="col-tobuild" data-col="tobuild">
+      </div>
+    </div>
+
+    <!-- IN PROGRESS -->
+    <div class="column column--inprogress" data-column="inprogress">
+      <div class="column__header">
+        <span class="column__title">In Progress</span>
+        <span class="column__count" id="count-inprogress">0</span>
+      </div>
+      <div class="column__body" id="col-inprogress" data-col="inprogress">
+        <div class="column__empty">Drag a card here to start building</div>
+      </div>
+    </div>
+
+    <!-- DONE -->
+    <div class="column column--done" data-column="done">
+      <div class="column__header">
+        <span class="column__title">Done</span>
+        <span class="column__count" id="count-done">0</span>
+      </div>
+      <div class="column__body" id="col-done" data-col="done">
+        <div class="column__empty">Shipped automations land here</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── Footer ── -->
+<footer class="page-footer">
+  AI Builder Automation Portfolio — April 28, 2026 &nbsp;|&nbsp; Built in L2
+</footer>
+
+<script>
+  // ── Column ↔ Notion Status mappings ──────────────────────────────────
+  const STATUS_TO_COL = {
+    'Suggested':  'suggested',
+    'To Build':   'tobuild',
+    'In Progress':'inprogress',
+    'Done':       'done',
+  };
+  const COL_TO_STATUS = {
+    suggested:  'Suggested',
+    tobuild:    'To Build',
+    inprogress: 'In Progress',
+    done:       'Done',
+  };
+
+  // ── Build card element ────────────────────────────────────────────────
+  function makeCard(card) {
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.draggable = true;
+    el.dataset.id = card.id;
+    el.dataset.priority = card.priority;
+
+    el.innerHTML = `
+      <div class="card__name">${card.name}</div>
+      <div class="card__desc">${card.desc}</div>
+      <div class="card__footer">
+        <span class="priority-pill priority-pill--${card.priority}">${card.priority}</span>
+      </div>
+    `;
+
+    el.addEventListener('dragstart', onDragStart);
+    el.addEventListener('dragend', onDragEnd);
+    return el;
+  }
+
+  // ── Fetch from Notion and render ──────────────────────────────────────
+  async function render() {
+    try {
+      const res = await fetch('/api/roadmap');
+      const cards = await res.json();
+      cards.forEach(card => {
+        const col = STATUS_TO_COL[card.status] || 'tobuild';
+        const colEl = document.getElementById('col-' + col);
+        if (colEl) colEl.appendChild(makeCard(card));
+      });
+      updateCounts();
+    } catch (err) {
+      console.error('Failed to load roadmap:', err);
+    }
+  }
+
+  // ── Count badges ──────────────────────────────────────────────────────
+  function updateCounts() {
+    ['suggested','tobuild','inprogress','done'].forEach(col => {
+      const body = document.getElementById('col-' + col);
+      const count = body ? body.querySelectorAll('.card').length : 0;
+      const badge = document.getElementById('count-' + col);
+      if (badge) badge.textContent = count;
+      const empty = body ? body.querySelector('.column__empty') : null;
+      if (empty) empty.style.display = count > 0 ? 'none' : 'block';
+    });
+  }
+
+  // ── Drag and drop ─────────────────────────────────────────────────────
+  let dragging = null;
+
+  function onDragStart(e) {
+    dragging = e.currentTarget;
+    dragging.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', dragging.dataset.id);
+  }
+
+  function onDragEnd() {
+    if (dragging) dragging.classList.remove('dragging');
+    dragging = null;
+    document.querySelectorAll('.column__body').forEach(b => b.classList.remove('drag-over'));
+  }
+
+  async function patchStatus(cardId, col) {
+    try {
+      await fetch('/api/roadmap', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: cardId, status: col }),
+      });
+    } catch (err) {
+      console.error('Failed to update status:', err);
+    }
+  }
+
+  // Wire drop zones
+  document.querySelectorAll('.column__body').forEach(zone => {
+    zone.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      zone.classList.add('drag-over');
+    });
+
+    zone.addEventListener('dragleave', e => {
+      if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
+    });
+
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+      if (!dragging) return;
+
+      const afterEl = getDragAfterElement(zone, e.clientY);
+      if (afterEl) zone.insertBefore(dragging, afterEl);
+      else zone.appendChild(dragging);
+
+      patchStatus(dragging.dataset.id, zone.dataset.col);
+      updateCounts();
+    });
+  });
+
+  function getDragAfterElement(container, y) {
+    const cards = [...container.querySelectorAll('.card:not(.dragging)')];
+    return cards.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) return { offset, element: child };
+      return closest;
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────────
+  render();
+</script>
+
+</body>
+</html>
