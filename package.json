@@ -1,9 +1,7 @@
 {
   "name": "scribbi-ai-dashboard",
   "version": "1.0.0",
-  "dependencies": {
-    "@notionhq/client": "^2.2.15"
-  },
+  "dependencies": {},
   "devDependencies": {
     "vercel": "^37.0.0"
   }
