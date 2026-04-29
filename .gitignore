@@ -1,5 +1,27 @@
 node_modules/
 .env.local
 .env
-.vercel/
+.vercel
 *.log
+
+# Scribbi business files — not part of the web project
+CLAUDE.md
+.claude/
+Call Tracker/
+Claude Context/
+Demo Storyboard/
+Email/
+Genuisee/
+Github repos/
+Handwriting Research/
+Kickstarter/
+Legal/
+Marketing Materials/
+Pilot/
+Presentation/
+Provisional Patent/
+Scribbi Apps/
+Scribbi Sales Agent/
+Social Posts/
+Think Pieces/
+*.xlsx
