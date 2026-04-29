@@ -42,28 +42,32 @@ module.exports = async (req, res) => {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  if (req.method === 'GET') {
-    const data = await notionRequest('POST', `/v1/databases/${DB_ID}/query`, {});
-    const cards = (data.results || []).map(page => ({
-      id: page.id,
-      name: page.properties.Name.title[0]?.plain_text || '(untitled)',
-      desc: page.properties.Description.rich_text[0]?.plain_text || '',
-      priority: page.properties.Priority.select?.name || 'Medium',
-      status: page.properties.Status.select?.name || 'To Build',
-    }));
-    return res.json(cards);
-  }
+  try {
+    if (req.method === 'GET') {
+      const data = await notionRequest('POST', `/v1/databases/${DB_ID}/query`, {});
+      const cards = (data.results || []).map(page => ({
+        id: page.id,
+        name: page.properties.Name.title[0]?.plain_text || '(untitled)',
+        desc: page.properties.Description.rich_text[0]?.plain_text || '',
+        priority: page.properties.Priority.select?.name || 'Medium',
+        status: page.properties.Status.select?.name || 'To Build',
+      }));
+      return res.json(cards);
+    }
 
-  if (req.method === 'PATCH') {
-    const { id, status } = req.body;
-    const notionStatus = COL_TO_STATUS[status] || status;
-    await notionRequest('PATCH', `/v1/pages/${id}`, {
-      properties: {
-        Status: { select: { name: notionStatus } },
-      },
-    });
-    return res.json({ ok: true });
-  }
+    if (req.method === 'PATCH') {
+      const { id, status } = req.body;
+      const notionStatus = COL_TO_STATUS[status] || status;
+      await notionRequest('PATCH', `/v1/pages/${id}`, {
+        properties: {
+          Status: { select: { name: notionStatus } },
+        },
+      });
+      return res.json({ ok: true });
+    }
 
-  return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ error: 'Method not allowed' });
+  } catch (err) {
+    return res.status(500).json({ error: err.message, stack: err.stack });
+  }
 };
