@@ -1,7 +1,7 @@
 const https = require('https');
 
-const TOKEN = process.env.NOTION_TOKEN;
-const DB_ID = process.env.NOTION_DATABASE_ID;
+const TOKEN = (process.env.NOTION_TOKEN || '').trim();
+const DB_ID = (process.env.NOTION_DATABASE_ID || '').trim();
 
 const COL_TO_STATUS = {
   suggested:  'Suggested',
